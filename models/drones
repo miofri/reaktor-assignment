@@ -1,0 +1,19 @@
+const mongoose = require('mongoose');
+require('dotenv').config()
+
+const pilotSchema = new mongoose.Schema({
+	pilotId: String,
+	firstName: String,
+	lastName: String,
+	phoneNumber: String,
+	email: String,
+	expireAt: {
+		type: Date,
+		default: Date.now,
+		expires: 600 // Delete after 10 minutes.
+	}
+})
+
+const Pilot = mongoose.model('Pilot', pilotSchema);
+
+module.exports = Pilot;
