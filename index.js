@@ -16,8 +16,10 @@ app.use(express.json());
 mongoose.connect(process.env.URL)
 	.then(() => { return console.log('Connected to MongoDB') })
 
-let filteredResult;
 let closestDistance
+let xmlParsedData;
+let filteredResult;
+
 
 fs.readFile('./confirmed_closest_distance.txt', 'utf8', (err, data) => {
 	closestDistance = parseFloat(data);
@@ -26,25 +28,16 @@ fs.readFile('./confirmed_closest_distance.txt', 'utf8', (err, data) => {
 		return;
 	}
 })
-console.log('ASDF')
 
 
-
-// Finding if a point is inside a circle: https://math.stackexchange.com/questions/198764/how-to-know-if-a-point-is-inside-a-circle
 const calculator = (x, y) => {
 	const simplifyCoordinate = Math.pow((x / 1000 - 250), 2) + Math.pow(((y / 1000 - 250)), 2);
 	const calculation = Math.sqrt(simplifyCoordinate);
-	console.log('closest', closestDistance)
-
-	// console.log('i am simplify', simplifyCoordinate, x, y);
-	// console.log('i am calculation', calculation)
 
 	if (closestDistance > calculation) {
 		closestDistance = calculation;
 
 		fs.writeFile('./confirmed_closest_distance.txt', closestDistance.toString(), err => {
-
-			console.log('closest', typeof closestDistance)
 			if (err) {
 				console.error(err);
 			}
@@ -61,11 +54,8 @@ const nameChecker = async (pilotId) => {
 		.then(response => {
 			return response
 		})
-	// console.log('currenDB', currentDB)
 
 	let existingPilotId = currentDB.map(data => data.pilotId)
-
-	console.log('existing', existingPilotId)
 
 	if (existingPilotId.includes(pilotId))
 		return true;
@@ -100,8 +90,8 @@ const pilotData = async () => {
 	};
 }
 
-const res = async (request, response, next) => {
-	let xmlParsedData;
+const res = async () => {
+
 	const droneCall = await axios.get('http://assignments.reaktor.com/birdnest/drones', {
 		params: {
 			method: 'GET',
@@ -112,10 +102,8 @@ const res = async (request, response, next) => {
 		xmlParsedData = result
 	})
 
-	let filteredDrone = xmlParsedData.report.capture[0].drone.map(data => data) //filtering just the drone data...
-
-	filteredResult = filteredDrone.filter(data => calculator(data.positionX, data.positionY)); //...then filtering *within the NDZ*
-	console.log('iamfilteredResult', JSON.stringify(xmlParsedData.report.deviceInformation[0].$))
+	let droneList = xmlParsedData.report.capture[0].drone.map(data => data) //filtering just the drone data...
+	filteredResult = droneList.filter(data => calculator(data.positionX, data.positionY)); //...then filtering *within the NDZ*
 	return filteredResult
 }
 
@@ -134,8 +122,13 @@ app.get('/', (request, response, next) => {
 		.catch(err => next(err))
 })
 
-app.get('')
+app.get('/closestdistancedevicedetail', (request, response, next) => {
+	// console.log('HELLO', xmlParsedData.report.deviceInformation);
+	response.send(xmlParsedData);
+})
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT);
 console.log(`Server is running on port ${PORT}`);
+
+// Finding if a point is inside a circle: https://math.stackexchange.com/questions/198764/how-to-know-if-a-point-is-inside-a-circle
