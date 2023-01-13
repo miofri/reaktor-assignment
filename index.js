@@ -20,7 +20,6 @@ let closestDistance
 let xmlParsedData;
 let filteredResult;
 
-
 fs.readFile('./confirmed_closest_distance.txt', 'utf8', (err, data) => {
 	closestDistance = parseFloat(data);
 	if (err) {
@@ -51,9 +50,6 @@ const calculator = (x, y) => {
 
 const nameChecker = async (pilotId) => {
 	const currentDB = await Pilot.find({})
-		.then(response => {
-			return response
-		})
 
 	let existingPilotId = currentDB.map(data => data.pilotId)
 
@@ -68,27 +64,25 @@ const pilotData = async () => {
 
 	if (serialNumbers) {
 		await Promise.all(serialNumbers.map(async (data) => {
-			await axios.get(`https://assignments.reaktor.com/birdnest/pilots/${data}`)
-				.then(async (result) => {
 
-					const doesPilotIdExist = await nameChecker(result.data.pilotId);
+			const pilotData = await axios.get(`https://assignments.reaktor.com/birdnest/pilots/${data}`)
+			const doesPilotIdExist = await nameChecker(pilotData.data.pilotId);
 
-					if (doesPilotIdExist === false) {
-						const newPilot = new Pilot({
-							pilotId: result.data.pilotId,
-							firstName: result.data.firstName,
-							lastName: result.data.lastName,
-							email: result.data.email,
-							phoneNumber: result.data.phoneNumber
-						})
-						newPilot.save();
-					}
+			if (doesPilotIdExist === false) {
+				const newPilot = new Pilot({
+					pilotId: pilotData.data.pilotId,
+					firstName: pilotData.data.firstName,
+					lastName: pilotData.data.lastName,
+					email: pilotData.data.email,
+					phoneNumber: pilotData.data.phoneNumber
 				})
-		}
-		))
 
-	};
+				return newPilot.save();
+			}
+		}))
+	}
 }
+
 
 const res = async () => {
 
@@ -103,7 +97,9 @@ const res = async () => {
 	})
 
 	let droneList = xmlParsedData.report.capture[0].drone.map(data => data) //filtering just the drone data...
+
 	filteredResult = droneList.filter(data => calculator(data.positionX, data.positionY)); //...then filtering *within the NDZ*
+
 	return filteredResult
 }
 
@@ -117,15 +113,30 @@ app.get('/', (request, response, next) => {
 			return liveDB
 		})
 		.then((result) => {
+			console.log('sending')
+
 			response.send(result)
 		})
-		.catch(err => next(err))
+		.catch(err => { next(err) })
 })
 
-app.get('/closestdistancedevicedetail', (request, response, next) => {
-	// console.log('HELLO', xmlParsedData.report.deviceInformation);
-	response.send(xmlParsedData);
+app.get('/devicedetail', (request, response, next) => {
+	let appendedXMLData = [closestDistance.toFixed(12)]
+	appendedXMLData.push(xmlParsedData);
+
+	console.log(appendedXMLData)
+
+
+	response.send(appendedXMLData);
 })
+
+const errorHandler = (error, request, response, next) => {
+	console.log(error)
+
+	next(error);
+}
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT);
