@@ -13,6 +13,8 @@ require('dotenv').config()
 app.use(cors());
 app.use(express.json());
 
+// app.use(express.static('build'))
+
 mongoose.connect(process.env.URL)
 	.then(() => { return console.log('Connected to MongoDB') })
 
@@ -103,7 +105,7 @@ const res = async () => {
 	return filteredResult
 }
 
-app.get('/', (request, response, next) => {
+app.get('/home', (request, response, next) => {
 	res()
 		.then(() => {
 			return pilotData();
@@ -121,7 +123,7 @@ app.get('/', (request, response, next) => {
 })
 
 app.get('/devicedetail', (request, response, next) => {
-	let appendedXMLData = [closestDistance.toFixed(12)]
+	let appendedXMLData = [closestDistance.toFixed(15)]
 	appendedXMLData.push(xmlParsedData);
 
 	console.log(appendedXMLData)
@@ -138,7 +140,7 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT);
 console.log(`Server is running on port ${PORT}`);
 
