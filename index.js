@@ -12,7 +12,6 @@ require('dotenv').config()
 
 app.use(cors());
 app.use(express.json());
-
 // app.use(express.static('build'))
 
 mongoose.connect(process.env.URL)
@@ -29,7 +28,6 @@ fs.readFile('./confirmed_closest_distance.txt', 'utf8', (err, data) => {
 		return;
 	}
 })
-
 
 const calculator = (x, y) => {
 	const simplifyCoordinate = Math.pow((x / 1000 - 250), 2) + Math.pow(((y / 1000 - 250)), 2);
@@ -71,6 +69,7 @@ const pilotData = async () => {
 			const doesPilotIdExist = await nameChecker(pilotData.data.pilotId);
 
 			if (doesPilotIdExist === false) {
+
 				const newPilot = new Pilot({
 					pilotId: pilotData.data.pilotId,
 					firstName: pilotData.data.firstName,
@@ -88,12 +87,8 @@ const pilotData = async () => {
 
 const res = async () => {
 
-	const droneCall = await axios.get('http://assignments.reaktor.com/birdnest/drones', {
-		params: {
-			method: 'GET',
-			headers: { "Access-Control-Allow-Origin": "*" },
-		}
-	})
+	const droneCall = await axios.get('http://assignments.reaktor.com/birdnest/drones'
+	)
 	await parseStringPromise(droneCall.data).then(function (result) {
 		xmlParsedData = result
 	})
@@ -111,23 +106,17 @@ app.get('/home', (request, response, next) => {
 			return pilotData();
 		})
 		.then(() => {
-			const liveDB = Pilot.find({})
-			return liveDB
+			return Pilot.find({})
 		})
 		.then((result) => {
-			console.log('sending')
-
 			response.send(result)
 		})
 		.catch(err => { next(err) })
 })
 
 app.get('/devicedetail', (request, response, next) => {
-	let appendedXMLData = [closestDistance.toFixed(15)]
+	let appendedXMLData = [closestDistance.toFixed(3)]
 	appendedXMLData.push(xmlParsedData);
-
-	console.log(appendedXMLData)
-
 
 	response.send(appendedXMLData);
 })
