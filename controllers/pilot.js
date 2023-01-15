@@ -8,6 +8,9 @@ pilotRouter.get('/home', (request, response, next) => {
 			return pilotLib.pilotData();
 		})
 		.then(() => {
+			return pilotLib.droneData();
+		})
+		.then(() => {
 			return Pilot.find({})
 		})
 		.then((result) => {
@@ -17,8 +20,10 @@ pilotRouter.get('/home', (request, response, next) => {
 })
 
 pilotRouter.get('/devicedetail', (request, response) => {
-	appendedXMLData = pilotLib.deviceData();
-	response.send(appendedXMLData);
+	pilotLib.deviceData()
+		.then((result) => {
+			return response.send(result)
+		})
 })
 
 const errorHandler = (error, request, response, next) => {

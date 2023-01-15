@@ -1,40 +1,30 @@
 const Pilot = require('../models/pilotNames');
 const Drone = require('../models/droneData');
-const fs = require('fs');
 const { parseStringPromise } = require('xml2js');
 const axios = require('axios')
+const pilotLibUtils = require('../utils/pilotLib-utils')
 
 let closestDistance
 let xmlParsedData;
 let filteredResult;
-let test = false;
 
-fs.readFile('./functions/confirmed_closest_distance.txt', 'utf8', (err, data) => {
+const closestDistanceChecker = async () => {
+	const droneDB = await Drone.find({})
+	let droneWithDistance = []
+	let distances = []
 
-	closestDistance = parseFloat(data);
-	if (err) {
-		console.error(err);
-		return;
-	}
-})
+	droneDB.forEach(element => {
+		let calculation = pilotLibUtils.calculator(element.positionX, element.positionY);
 
-const calculator = (x, y) => {
-	const simplifyCoordinate = Math.pow((x / 1000 - 250), 2) + Math.pow(((y / 1000 - 250)), 2);
-	const calculation = Math.sqrt(simplifyCoordinate);
+		let newObj = { ...element, distance: calculation };
 
-	if (closestDistance > calculation) {
-		closestDistance = calculation;
+		distances.push(calculation);
+		droneWithDistance.push(newObj);
+	});
 
-		fs.writeFile('./functions/confirmed_closest_distance.txt', closestDistance.toString(), err => {
-			if (err) {
-				console.error(err);
-			}
-		});
-	}
-	if (calculation < 100)
-		return true;
-	else
-		return false;
+	closestDistance = Math.min(...distances);
+
+	return closestDistance;
 }
 
 const droneData = async () => {
@@ -42,43 +32,29 @@ const droneData = async () => {
 	const droneDB = await Drone.find({})
 	let existingDroneSN = droneDB.map(data => data.serialNumber)
 
-	filteredResult.forEach(element => {
-		if (!(existingDroneSN.includes(element.serialNumber[0]))) {
-			const newDrone = new Drone({
-				serialNumber: element.serialNumber[0],
-				model: element.model[0],
-				manufacturer: element.manufacturer[0],
-				mac: element.mac[0],
-				ipv4: element.ipv4[0],
-				ipv6: element.ipv6[0],
-				firmware: element.firmware[0],
-				positionY: element.positionY[0],
-				positionX: element.positionY[0],
-				altitude: element.altitude[0],
-			})
-			console.log('newDrone', element.serialNumber[0], newDrone.serialNumber)
+	if (filteredResult) {
+		await Promise.all(filteredResult.map(element => {
 
-			return newDrone.save()
-		}
-
-	});
-
-}
-
-const nameChecker = async (pilotId) => {
-	const pilotDB = await Pilot.find({})
-
-	let existingPilotId = pilotDB.map(data => data.pilotId)
-
-	if (existingPilotId.includes(pilotId))
-		return true;
-	else
-		return false;
+			if (!(existingDroneSN.includes(element.serialNumber[0]))) {
+				const newDrone = new Drone({
+					serialNumber: element.serialNumber[0],
+					model: element.model[0],
+					manufacturer: element.manufacturer[0],
+					mac: element.mac[0],
+					ipv4: element.ipv4[0],
+					ipv6: element.ipv6[0],
+					firmware: element.firmware[0],
+					positionY: element.positionY[0],
+					positionX: element.positionX[0],
+					altitude: element.altitude[0],
+				})
+				return newDrone.save()
+			}
+		}))
+	}
 }
 
 const pilotData = async () => {
-
-	droneData();
 
 	let serialNumbers = filteredResult.map(data => data.serialNumber)
 
@@ -86,7 +62,7 @@ const pilotData = async () => {
 		await Promise.all(serialNumbers.map(async (data) => {
 
 			const pilotData = await axios.get(`https://assignments.reaktor.com/birdnest/pilots/${data}`)
-			const doesPilotIdExist = await nameChecker(pilotData.data.pilotId);
+			const doesPilotIdExist = await pilotLibUtils.nameChecker(pilotData.data.pilotId);
 
 			if (doesPilotIdExist === false) {
 
@@ -97,8 +73,6 @@ const pilotData = async () => {
 					email: pilotData.data.email,
 					phoneNumber: pilotData.data.phoneNumber
 				})
-				console.log('newPilot', newPilot.pilotId)
-
 				return newPilot.save();
 			}
 		}))
@@ -117,15 +91,17 @@ const res = async () => {
 
 	let droneList = xmlParsedData.report.capture[0].drone.map(data => data) //filtering just the drone data...
 
-	filteredResult = droneList.filter(data => calculator(data.positionX, data.positionY)); //...then filtering *within the NDZ*
-	console.log('filteredResult', filteredResult)
+	filteredResult = droneList.filter(data => pilotLibUtils.boolCalculator(data.positionX, data.positionY)); //...then filtering *within the NDZ*
 
 	return filteredResult
 }
 
-const deviceData = () => {
+const deviceData = async () => {
+	closestDistance = await closestDistanceChecker();
+
 	let appendedXMLData = [closestDistance.toFixed(3)]
 	appendedXMLData.push(xmlParsedData);
+
 	return appendedXMLData
 }
 
@@ -133,4 +109,5 @@ module.exports = {
 	res,
 	pilotData,
 	deviceData,
+	droneData
 }
