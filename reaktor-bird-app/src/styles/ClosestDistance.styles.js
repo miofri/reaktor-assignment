@@ -14,6 +14,7 @@ text-align: center;
 	}
 `
 export const ClosestDistanceHeader = styled.div`
+border: 3px;
 border-bottom: 10px;
 border-style: solid;
 border-color: black;
