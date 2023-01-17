@@ -1,4 +1,4 @@
-import styled, { css, keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 const FadeIn = keyframes`
   0% {
@@ -62,16 +62,7 @@ export const ListWrapper = styled.div`
 		margin: 25px auto;
 	}
 `
-/*
-1200
-1024
-992
-800
-782
-600
-480
 
-*/
 export const PilotWrapper = styled.div`
 	width: 900px;
 	height: 30px;
@@ -87,6 +78,7 @@ export const PilotWrapper = styled.div`
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	overflow-wrap: break-word;
 
 	color:  #003d5c;
 	background-color: hsl(200 50% 90%);
