@@ -2,7 +2,9 @@
 
 This project is my solution to Reaktor's Developer Trainee, summer 2023 pre-assignment. :blush:
 
-## Objective: 
+![image](https://gyazo.com/5a1428a8078b0db1b808ce0db18e28c4)
+
+## Objective:
 
 > Build and deploy a web application which lists all the pilots who recently violated the NDZ perimeter.
 
@@ -14,6 +16,24 @@ This project is my solution to Reaktor's Developer Trainee, summer 2023 pre-assi
 
 ## Tech used:
 MERN stack, styled-components.
+
+## Navigation:
+### Back-end
+- `./controllers` contains routers
+- `./functions` functions called by routers
+- `./models` MongoDB schema
+- `./utils` helper functions
+- `./reaktor-bird-app` contains front-end
+- `app.js` contains the actual app
+- `index.js` calls the app
+
+### Front-end
+- `./build` contains the production version of front end
+- `./src/components` React components
+- `./src/styles` styled-components which are used instead of normal css
+- `./src/utils` helper functions
+- `app.js` the React app
+- `index.js` tells React where and what to render
 
 ## Approach:
 ### Back-end
