@@ -26,6 +26,10 @@ pilotRouter.get('/devicedetail', (request, response) => {
 		})
 })
 
+pilotRouter.get('/', (request, response) => {
+	return response.send('Welcome to the backend, try /home or /devicedetail.')
+})
+
 const errorHandler = (error, request, response, next) => {
 	console.log(error)
 	next(error);

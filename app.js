@@ -11,7 +11,7 @@ mongoose.connect(config.MONGOURI)
 	.catch(error => console.log('MongoDB error: ', error)
 	)
 
-app.use(express.static('build'))
+// app.use(express.static('build'))
 
 app.use(express.json());
 app.use(cors());

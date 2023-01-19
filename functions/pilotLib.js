@@ -83,8 +83,7 @@ const pilotData = async () => {
 const res = async () => {
 
 
-	const droneCall = await axios.get('http://assignments.reaktor.com/birdnest/drones'
-	)
+	const droneCall = await axios.get('http://assignments.reaktor.com/birdnest/drones')
 	await parseStringPromise(droneCall.data).then(function (result) {
 		xmlParsedData = result
 	})

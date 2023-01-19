@@ -53,10 +53,10 @@ export const DeviceDetail = () => {
 	const [refresher, setRefresher] = useState(0)
 
 	useEffect(() => {
-		axios.get(`/devicedetail`)
+		axios.get(`${devURL}/devicedetail`)
 			.then(async response => {
-				closestDrone = response.data[0]
-				if (response.data[1].report) {
+				if (response.data[1].report && response.data[0]) {
+					closestDrone = response.data[0]
 					return setDeviceData(response.data[1].report.deviceInformation[0])
 				}
 				else {
@@ -69,7 +69,7 @@ export const DeviceDetail = () => {
 
 		const interval = setInterval(() => {
 			setRefresher(prev => prev + 1)
-		}, 600000);
+		}, 5000);
 
 		return () => clearInterval(interval);
 	}, [refresher])
@@ -80,6 +80,4 @@ export const DeviceDetail = () => {
 				<GuardBirdBox deviceData={deviceData} />
 			</>
 		)
-
-
 }

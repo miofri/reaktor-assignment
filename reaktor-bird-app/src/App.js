@@ -12,15 +12,16 @@ function App() {
 	const [time, setTime] = useState(0)
 
 	useEffect(() => {
-		axios.get(`/home`)
+		axios.get(`${devURL}/home`)
 			.then(res => {
 				return setDroneData(res.data);
 			})
 			.catch(err => {
 				if (err.response !== undefined || err.response.status === 429) {
+					console.log('Error: ', err.message)
 					setTimeout(() => {
 						return;
-					}, 10000);
+					}, 5000);
 				}
 				else
 					console.log('Error: ', err.message)
