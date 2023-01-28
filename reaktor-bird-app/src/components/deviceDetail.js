@@ -69,7 +69,7 @@ export const DeviceDetail = () => {
 
 		const interval = setInterval(() => {
 			setRefresher(prev => prev + 1)
-		}, 600000);
+		}, 10000);
 
 		return () => clearInterval(interval);
 	}, [refresher])

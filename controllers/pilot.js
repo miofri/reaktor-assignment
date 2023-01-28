@@ -3,7 +3,7 @@ const Pilot = require('../models/pilotNames');
 const pilotLib = require('../functions/pilotLib')
 
 pilotRouter.get('/home', (request, response, next) => {
-	pilotLib.res()
+	pilotLib.dataParser()
 		.then(() => {
 			return pilotLib.pilotData();
 		})
