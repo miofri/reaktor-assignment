@@ -1,3 +1,16 @@
+/**
+ * Routers
+ *
+ * pilotRouter.get(/home) =>
+ * 		axios calls /home; dataParser gets the XML data from Reaktor's
+ * 		site & convert it into JSON, filters the NDZ violators.
+ * 		Waits for pilotData & droneData to be saved into MongoDB & send out
+ * 		all saved Pilots.
+ *
+ * pilotRouter.get(/devicedetail) =>
+ * 		sends the device data for (GUARDB1RD) & closest distance detected when called.
+ */
+
 const pilotRouter = require('express').Router()
 const Pilot = require('../models/pilotNames');
 const pilotLib = require('../functions/pilotLib')

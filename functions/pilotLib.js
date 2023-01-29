@@ -1,3 +1,30 @@
+/**
+ * pilotLib - functions related to fetching & parsing data, and sending them out.
+ *
+ * Global var
+ * 	closestDistance: the closest NDZ violator to the origin - type numbers
+ * 	filteredResult: contains the list of NDZ violators in JSON format - type array of objects
+ * 	xmlParsedData: converted XMLdata from Reaktor's API into JSON format - type object
+ *
+ * Functions
+ * 	dataParser
+ *		fetch the XML data from Reaktor's API, parses it into JSON format and filters the
+		non-violators out. Returns filteredResult
+ * 	droneData
+		first fetch all the existing drone in DB and makes sure that there is no duplicate,
+		and creates new drone documents from the filteredResult.
+ * 	pilotData
+		first fetch all the existing pilots in DB and makes sure that there is no duplicate,
+		fetch pilot data from the API, and creates new pilot documents from the filteredResult.
+ * 	closestDistanceChecker
+		checks the current closest distance from all existing drone in the DB.
+		pilotLibUtils.calculator calculates the closest distance with the Euclidean formula.
+		then we return ClosestDistance which contains the min of all distances.
+ * 	deviceData
+		returns the device's detail from the API.
+		after getting the closest distance, returns the device detail by appending it to xmlParsedData.
+ */
+
 const Pilot = require('../models/pilotNames');
 const Drone = require('../models/droneData');
 const { parseStringPromise } = require('xml2js');
@@ -10,16 +37,11 @@ let filteredResult;
 
 const closestDistanceChecker = async () => {
 	const droneDB = await Drone.find({})
-	let droneWithDistance = []
 	let distances = []
 
 	droneDB.forEach(element => {
 		let calculation = pilotLibUtils.calculator(element.positionX, element.positionY);
-
-		let newObj = { ...element, distance: calculation };
-
 		distances.push(calculation);
-		droneWithDistance.push(newObj);
 	});
 
 	closestDistance = Math.min(...distances);

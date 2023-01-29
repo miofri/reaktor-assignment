@@ -1,3 +1,15 @@
+/**
+ * Utilities
+ *
+ * Functions
+ * 	boolCalculator
+ * 		checks whether a drone violated the NDZ with Euclidian formula, returns true/false
+ * 	calculator
+ * 		same as boolCalculator, but instead returns the actual value.
+ *	nameChecker
+ *		checks that the same pilotId doesn't exist yet in MongoDB to prevent duplicates.
+ */
+
 const Pilot = require('../models/pilotNames');
 
 const boolCalculator = (x, y) => {
