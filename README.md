@@ -2,7 +2,7 @@
 
 This project is my solution to Reaktor's Developer Trainee, summer 2023 pre-assignment. :blush:
 
-Live site: skesuma-drone.fly.dev
+Live site: <a href="https://skesuma-drone.fly.dev">skesuma-drone.fly.dev</a> (The site needs a while to warm up as I use fly.io's free tier)
 
 ![image](https://gyazo.com/5a1428a8078b0db1b808ce0db18e28c4.png)
 
