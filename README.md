@@ -2,6 +2,8 @@
 
 This project is my solution to Reaktor's Developer Trainee, summer 2023 pre-assignment. :blush:
 
+Live site: skesuma-drone.fly.dev
+
 ![image](https://gyazo.com/5a1428a8078b0db1b808ce0db18e28c4.png)
 
 ## Objective:
