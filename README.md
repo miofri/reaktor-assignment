@@ -45,5 +45,4 @@ MERN stack, styled-components.
 - Each document in MongoDB is deleted after 10 mins.
 
 ### Front-end
-- Pilot list is updated every 2s, and device's details every 10 mins alongside the closest distance (CD)
-- Device details contains Guardb1rd details alongside CD. CD is calculated & updated every 10 mins from live drone data.
+- Pilot list is updated every 2s, and device's details every 10 seconds alongside the closest distance. 
