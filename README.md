@@ -1,4 +1,6 @@
-# PROJECT BIRDNEST: NDZ Violator List
+# PROJECT BIRDNEST: NDZ Violator List - BROKEN
+
+## Reaktor has taken down their API so this project doesn't work any more.
 
 This project is my solution to Reaktor's Developer Trainee, summer 2023 pre-assignment. :blush:
 
